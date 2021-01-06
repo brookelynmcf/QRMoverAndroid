@@ -26,6 +26,7 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
         contentValues.put(COL_NOTE, note.note)
         contentValues.put(COL_PICTURE, note.picture)
         contentValues.put(COL_CREATEDON, note.createdOn)
+
         val result = database.insert(TABLENAME, null, contentValues)
         if (result == (0).toLong()) {
             Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show()
