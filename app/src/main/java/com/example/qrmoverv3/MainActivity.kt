@@ -1,39 +1,78 @@
 package com.example.qrmoverv3
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.SparseBooleanArray
+import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.util.plus
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
+import kotlin.collections.ArrayList
+
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        title = "KotlinApp"
-        val context = this
+        var context = this
         val db = DataBaseHandler(context)
-        btnInsert.setOnClickListener {
-            if (editTextName.text.toString().isNotEmpty() &&
-                editTextAge.text.toString().isNotEmpty()
-            ) {
-                val user = User(editTextName.text.toString(), editTextAge.text.toString().toInt())
-                db.insertData(user)
+
+        val savedItems = db.readData()
+        // Initializing the array lists and the adapter
+        var itemlist = if (savedItems != null) savedItems as ArrayList<String> else arrayListOf<String>()
+        var adapter = ArrayAdapter<String>(this,
+            android.R.layout.simple_list_item_multiple_choice
+            , itemlist)
+
+        // Adding the items to the list when the add button is pressed
+        // Creating a random UUID (Universally unique identifier). This will be replaced with the UUID from the QR code eventually
+        //TODO: replace generated UUID with QR code value
+        val uuid: UUID = UUID.randomUUID()
+        val randomUUIDString: String = uuid.toString()
+        add.setOnClickListener {
+            if (editText.text.toString().isNotEmpty()){
+                val listItem = Note(randomUUIDString, editText.text.toString(), "", Calendar.getInstance().toString())
+                db.insertData(listItem)
                 clearField()
+
+                itemlist.add(editText.text.toString())
+                listView.adapter =  adapter
+                adapter.notifyDataSetChanged()
+                // This is because every time when you add the item the input space or the eidt text space will be cleared
+                editText.text.clear()
             }
-            else {
+            else{
                 Toast.makeText(context, "Please Fill All Data's", Toast.LENGTH_SHORT).show()
             }
+
         }
-        btnRead.setOnClickListener {
-            val data = db.readData()
-            tvResult.text = ""
-            for (i in 0 until data.size) {
-                tvResult.append(
-                    data[i].id.toString() + " " + data[i].name + " " + data[i].age + "\n"
-                )
+
+        // Clearing all the items in the list when the clear button is pressed
+        clear.setOnClickListener {
+
+            itemlist.clear()
+            adapter.notifyDataSetChanged()
+        }
+
+        // Selecting and Deleting the items from the list when the delete button is pressed
+        delete.setOnClickListener {
+            val position: SparseBooleanArray = listView.checkedItemPositions
+            val count = listView.count
+            var item = count - 1
+            while (item >= 0) {
+                if (position.get(item))
+                {
+                    adapter.remove(itemlist.get(item))
+                    db.deleteData(itemlist[item])
+                }
+                item--
             }
+            position.clear()
+            adapter.notifyDataSetChanged()
         }
+
     }
     private fun clearField() {
-        editTextName.text.clear()
-        editTextAge.text.clear()
+        editText.text.clear()
     }
+
 }

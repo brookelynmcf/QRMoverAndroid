@@ -4,4 +4,4 @@ The intent of this application is to maintain organization while moving. The use
 # Tech Stack
     - Kotlin
     - SQLite
-    
+
