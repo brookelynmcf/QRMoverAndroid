@@ -1,4 +1,3 @@
 package com.example.qrmoverv3
 
-class Note {
-}
+class Note (var id: String, var note: String, var picture: String, var createdOn: String){}
