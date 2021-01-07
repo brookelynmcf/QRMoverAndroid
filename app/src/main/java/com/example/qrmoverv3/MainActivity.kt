@@ -32,8 +32,6 @@ class MainActivity : AppCompatActivity() {
             if (editText.text.toString().isNotEmpty()){
                 val listItem = Note(randomUUIDString, editText.text.toString(), "", Calendar.getInstance().toString())
                 db.insertData(listItem)
-                clearField()
-
                 itemlist.add(editText.text.toString())
                 listView.adapter =  adapter
                 adapter.notifyDataSetChanged()
