@@ -49,9 +49,15 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
         }
         return list
     }
-    fun deleteData(id: String){
+    fun deleteData(itemId: String){
         val db = this.readableDatabase
-        val query = "Delete from $TABLENAME WHERE ID = $id"
+        val query = "Delete from $TABLENAME WHERE ID = $itemId"
         db.rawQuery(query, null)
-        }
+    }
+
+    fun bulkDeleteData() {
+        val db = this.readableDatabase
+        val query = "Delete from $TABLENAME"
+        db.rawQuery(query, null)
+    }
 }

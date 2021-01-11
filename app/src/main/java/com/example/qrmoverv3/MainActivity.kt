@@ -22,6 +22,7 @@ class MainActivity : AppCompatActivity() {
         var adapter = ArrayAdapter<String>(this,
             android.R.layout.simple_list_item_multiple_choice
             , itemlist)
+        listView.adapter =  adapter
 
         // Adding the items to the list when the add button is pressed
         // Creating a random UUID (Universally unique identifier). This will be replaced with the UUID from the QR code eventually
@@ -30,7 +31,7 @@ class MainActivity : AppCompatActivity() {
         val randomUUIDString: String = uuid.toString()
         add.setOnClickListener {
             if (editText.text.toString().isNotEmpty()){
-                val listItem = Note(randomUUIDString, editText.text.toString(), "", Calendar.getInstance().toString())
+                var listItem = Note(randomUUIDString, editText.text.toString(), "", Calendar.getInstance().toString())
                 db.insertData(listItem)
                 itemlist.add(editText.text.toString())
                 listView.adapter =  adapter
@@ -46,7 +47,7 @@ class MainActivity : AppCompatActivity() {
 
         // Clearing all the items in the list when the clear button is pressed
         clear.setOnClickListener {
-
+            db.bulkDeleteData()
             itemlist.clear()
             adapter.notifyDataSetChanged()
         }
@@ -57,9 +58,9 @@ class MainActivity : AppCompatActivity() {
             val count = listView.count
             var item = count - 1
             while (item >= 0) {
-                if (position.get(item))
+                if (position.get(item) && itemlist.count() > 0)
                 {
-                    adapter.remove(itemlist.get(item))
+                    adapter.remove(itemlist[item])
                     db.deleteData(itemlist[item])
                 }
                 item--
