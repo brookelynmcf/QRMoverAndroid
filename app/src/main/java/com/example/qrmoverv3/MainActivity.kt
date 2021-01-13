@@ -18,10 +18,14 @@ class MainActivity : AppCompatActivity() {
 
         val savedItems = db.readData()
         // Initializing the array lists and the adapter
-        var itemlist = if (savedItems != null) savedItems as ArrayList<String> else arrayListOf<String>()
+        var itemlist = if (savedItems != null) savedItems as ArrayList<Note> else arrayListOf<Note>()
+        val notes = arrayListOf<String>()
+        for (item in itemlist){
+            notes.add(item.note)
+        }
         var adapter = ArrayAdapter<String>(this,
             android.R.layout.simple_list_item_multiple_choice
-            , itemlist)
+            , notes)
         listView.adapter =  adapter
 
         // Adding the items to the list when the add button is pressed
@@ -33,7 +37,7 @@ class MainActivity : AppCompatActivity() {
             if (editText.text.toString().isNotEmpty()){
                 var listItem = Note(randomUUIDString, editText.text.toString(), "", Calendar.getInstance().toString())
                 db.insertData(listItem)
-                itemlist.add(editText.text.toString())
+                notes.add(editText.text.toString())
                 listView.adapter =  adapter
                 adapter.notifyDataSetChanged()
                 // This is because every time when you add the item the input space or the eidt text space will be cleared
@@ -60,8 +64,8 @@ class MainActivity : AppCompatActivity() {
             while (item >= 0) {
                 if (position.get(item) && itemlist.count() > 0)
                 {
-                    adapter.remove(itemlist[item])
-                    db.deleteData(itemlist[item])
+                    adapter.remove(notes[item])
+                    db.deleteData(notes[item])
                 }
                 item--
             }
